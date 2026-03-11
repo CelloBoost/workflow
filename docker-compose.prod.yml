@@ -1,0 +1,39 @@
+services:
+  postgres:
+    image: postgres:${POSTGRES_TAG:-17}
+    environment:
+      POSTGRES_DB: rgvc
+      POSTGRES_USER: rgvc
+      POSTGRES_PASSWORD: rgvc
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rgvc -d rgvc"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://0.0.0.0:8080
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=rgvc;Username=rgvc;Password=rgvc
+      System__Version: ${SYSTEM_VERSION:-local-dev-tag}
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp
+    restart: unless-stopped
+
+volumes:
+  postgres_prod_data:

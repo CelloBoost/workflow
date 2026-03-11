@@ -1,0 +1,5 @@
+@baseUrl = http://localhost:8080
+
+### System - Get Version
+GET {{baseUrl}}/api/rgvc/v1/system
+Accept: application/json

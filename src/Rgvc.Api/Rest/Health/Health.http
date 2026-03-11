@@ -1,0 +1,5 @@
+@baseUrl = http://localhost:8080
+
+### Health
+GET {{baseUrl}}/api/rgvc/v1/health
+Accept: application/json
