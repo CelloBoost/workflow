@@ -1,0 +1,5 @@
+@baseUrl = http://localhost:8081
+
+### System - Get Version
+GET {{baseUrl}}/api/workflow/v1/system
+Accept: application/json

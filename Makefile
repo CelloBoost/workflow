@@ -1,29 +1,30 @@
-COMPOSE_DEV := docker compose -f docker-compose.yml
-COMPOSE_PROD := docker compose -f docker-compose.prod.yml
+DEVICE_DIR := core
 
-.PHONY: dev down build test install-ef ef-add-migration prod-up prod-down
+.PHONY: dev down build test coverage build-image build-image-dev prod-up prod-down
 
 dev:
-	$(COMPOSE_DEV) up --build
+	$(MAKE) -C $(DEVICE_DIR) dev
 
 down:
-	$(COMPOSE_DEV) down
+	$(MAKE) -C $(DEVICE_DIR) down
 
 build:
-	dotnet build Rgvc.sln
+	$(MAKE) -C $(DEVICE_DIR) build
 
 test:
-	dotnet test Rgvc.sln
+	$(MAKE) -C $(DEVICE_DIR) test
 
-install-ef:
-	dotnet tool install --global dotnet-ef --version 8.0.8
+coverage:
+	$(MAKE) -C $(DEVICE_DIR) coverage
 
-ef-add-migration:
-	$(if $(MIGRATION),,$(error MIGRATION variable is required. Usage: make ef-add-migration MIGRATION=YourMigrationName))
-	dotnet ef migrations add $(MIGRATION) --project src/Rgvc.Infra/Rgvc.Infra.csproj --startup-project src/Rgvc.Api/Rgvc.Api.csproj --output-dir Data/Migrations --framework net8.0
+build-image:
+	$(MAKE) -C $(DEVICE_DIR) build-image
+
+build-image-dev:
+	$(MAKE) -C $(DEVICE_DIR) build-image-dev
 
 prod-up:
-	$(COMPOSE_PROD) up --build -d
+	$(MAKE) -C $(DEVICE_DIR) prod-up
 
 prod-down:
-	$(COMPOSE_PROD) down -v
+	$(MAKE) -C $(DEVICE_DIR) prod-down

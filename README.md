@@ -1,41 +1,35 @@
-# RGVC - RGV Controller
+# Workflow
 
-## Layers
-- `src/Rgvc.Api`: API layer (ASP.NET Core Rest Controllers)
-- `src/Rgvc.Domain`: Domain layer
-- `src/Rgvc.Application`: Application layer
-- `src/Rgvc.Infra`: Infrastructure layer (implementation, EF Core + PostgreSQL)
+目前內容包含：
 
-Each layer has its own DI entry file:
-- `src/Rgvc.Api/DependencyInjection.cs` -> `AddApi()`
-- `src/Rgvc.Domain/DependencyInjection.cs` -> `AddDomain()`
-- `src/Rgvc.Application/DependencyInjection.cs` -> `AddApplication()`
-- `src/Rgvc.Infra/DependencyInjection.cs` -> `AddInfrastructure()`
+- `core/Workflow.Api`: ASP.NET Core Web API
+- `core/Workflow.Application`: application layer
+- `core/Workflow.Domain`: domain layer
+- `core/Workflow.Infra`: infrastructure / EF Core / PostgreSQL
+- `core/Workflow.Tests`: NUnit 整合與單元測試
 
-## Run (Docker dev mode)
+## Quick Start
+
+在 repo root：
+
 ```bash
+make build
+make test
 make dev
 ```
 
-Docker PostgreSQL image tag is configured via `.env`.
+API 預設路由前綴：
 
-Then open:
-- `GET http://localhost:8080/api/rgvc/v1/health`
-Or use the provided `.http` files for more API calls.
-
-## Run (Docker production mode)
-```bash
-make prod-up
-make prod-down
+```text
+/api/workflow/v1
 ```
 
-This mode uses:
-- `docker-compose.prod.yml`
-- `Dockerfile` target `runtime` (no source bind mount, no `dotnet watch`)
-- `ASPNETCORE_ENVIRONMENT=Production`
+目前預設資料庫連線也已改為 `workflow`：
 
-## Production Image
-Build only the production runtime image:
-```bash
-docker build --target runtime -t rgvc-api:prod .
+```text
+Host=localhost;Port=5432;Database=workflow;Username=workflow;Password=workflow
 ```
+
+## Next
+
+接下來可以直接在這個骨架上開始替換目前的 `System` 範例內容，改成真正的 workflow domain / use cases / endpoints。

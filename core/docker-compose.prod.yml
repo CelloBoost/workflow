@@ -1,0 +1,42 @@
+services:
+  postgres:
+    image: postgres:${POSTGRES_TAG:-17}
+    environment:
+      POSTGRES_DB: workflow
+      POSTGRES_USER: workflow
+      POSTGRES_PASSWORD: workflow
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U workflow -d workflow"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  api:
+    image: ${DEVICE_IMAGE:-workflow-api}:prod
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime
+      args:
+        SRC_PREFIX: ""
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${WORKFLOW_API_PORT:-8081}:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://0.0.0.0:8080
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=workflow;Username=workflow;Password=workflow
+      System__Version: ${SYSTEM_VERSION:-local-dev-tag}
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp
+    restart: unless-stopped
+
+volumes:
+  postgres_prod_data:

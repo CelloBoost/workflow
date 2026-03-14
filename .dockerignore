@@ -1,6 +1,0 @@
-.git
-.gitignore
-.env
-**/bin
-**/obj
-README.md

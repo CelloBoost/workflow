@@ -1,0 +1,5 @@
+@baseUrl = http://localhost:8081
+
+### Health
+GET {{baseUrl}}/api/workflow/v1/health
+Accept: application/json
